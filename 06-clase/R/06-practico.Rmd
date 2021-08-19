@@ -41,12 +41,12 @@ pacman::p_load(sjmisc,
 
 # 3. Importar datos
 
-Una vez cargado los paquetes a utilizar, usaremos la base de datos **CASEN* que fue procesada en el práctico anterior.
+Una vez cargado los paquetes a utilizar, usaremos la base de datos **CASEN* que fue procesada en el práctico anterior, pero le añadimos una variable.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-load(file = "../06-class/06-clase/output/data/datos_proc.RData")
+load(file = "06-clase/output/data/datos_proc.RData")
 ```
 
 ### Variables a utilizar
@@ -71,6 +71,7 @@ Gracias a estos códigos sabemos que las variables utilizar serán
 "sexo"             
 "edad_tramo"       
 "ocupacion"        
+"horas_mens"
 "ingreso_percapita" 
 "ife" 
 ````
@@ -541,14 +542,14 @@ plot_grpfrq(datos_proc$ingreso_percapita, datos_proc$edad_tramo,
 
 Nuevamente, la función nos permite la creación de múltiples gráficos, sólo se debe cambiar el argumento ```type =```
 
-# 6. Tablas cruzadas
+# 6. Tablas de contingencia
 
 ¡No podemos terminar sin saber cómo hacer tablas de frecuencias cruzadas!
 
 Por suerte ```sjPlot``` tiene la función ```sjt.xtab```, que nos entrega tablas de frecuencias cruzadas
 
 ```{r casen tab cruz, echo=TRUE, results='markup'}
-sjt.xtab(datos_proc$sexo, datos_proc$ife,  title = "Tabla de frecuencias",
+sjt.xtab(datos_proc$sexo, datos_proc$ife,  title = "Tabla de contingencias",
          show.col.prc=TRUE,
          show.summary=FALSE)
 ```
@@ -563,14 +564,42 @@ sjt.xtab(datos_proc$sexo, datos_proc$ife,
          show.summary=FALSE, encoding = "UTF-8")
 ```
 
-# 6 Resumen del práctico
+# 7. Correlación
+
+Ahora veremos estadísticos bivariados, como la correlación, en esta ocasión generaremos una tabla de correlación entre las variables ```horas_mens``` y ```ingreso_percapita```, para eso usaremos la función ```tab_corr``` de ```sjPlot```
+
+Previamente debemos seleccionar en un objeto las variables a utilizar, ya que no tiene sentido incluir en el análisis variables nominales
+```{r casen selec, echo=TRUE, results='markup'}
+cor <- datos_proc %>%  select (horas_mens, ingreso_percapita)
+```
+
+Luego tendremos una tabla como esta
+
+```{r casen corr, echo=TRUE, results='markup'}
+tab_corr(cor,
+         triangle = "lower",   
+         title = "Tabla de correlación")
+```
+
+
+# 8. Anova
+
+Finalmente, si queremos reportar un análisis de Anova, no podemos dejar de lado este gráfico que nos otorga la función ```sjp.aov1``` del paquete ```sjPlot```
+
+```{r}
+sjp.aov1(datos_proc$ingreso_percapita, datos_proc$sexo, title = "Anova")
+```
+
+# 9. Resumen del práctico
 
 ¡Eso es todo por este práctico! Hoy aprendimos a:
 
 - Manejar datos descriptivos en Rstudio
 - A obtener tablas descriptivas
 - A visualizar los descriptivos
-- A obtener tablas descriptivas bivariadas
+- A obtener tablas de contingencia
+- A obtener tablas de correlación
+- A obtener gráficos de Anova
 
 # 7. Reporte de progreso
 
