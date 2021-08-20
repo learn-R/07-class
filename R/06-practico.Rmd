@@ -22,12 +22,12 @@ El objetivo del práctico, es avanzar en el análisis de los datos a través del
 En este práctico veremos tanto la _estimación puntual_ de estadísticos descriptivos, como su _visualización_ para reportes, ya sea a través de tablas o de gráficos. 
 
 
-# 1.  Recursos del práctico
+##  Recursos del práctico
 
 En este práctico utilizamos los **datos** procesados *CASEN 2020*, que proviene de los datos originales de [**Encuesta de Caracterización Socioeconómica (CASEN)**](http://observatorio.ministeriodesarrollosocial.gob.cl/encuesta-casen-en-pandemia-2020).Recuerden _**siempre**_ consultar el [**libro códigos**](http://observatorio.ministeriodesarrollosocial.gob.cl/storage/docs/casen/2020/Libro_de_codigos_Base_de_Datos_Casen_en_Pandemia_2020.pdf) antes de trabajar datos.
 
 
-# 2. Paquetes a usar
+# 1. Paquetes a utilizar
 
 Para este práctico utilizaremos principalmente, las librerias `sjmisc` y `sjPlot`. 
 
@@ -39,24 +39,26 @@ Cargaremos los paquetes con `pacman` [revisar práctico anterior](https://learn-
 
 ```{r librerias, echo=TRUE, results='hide'}
 pacman::p_load(sjmisc,
-               sjPlot)
+               sjPlot,
+               tidyverse,
+               magrittr)
 ```
 
-# 3. Importar datos
+# 2. Importar datos
 
-Una vez cargado los paquetes a utilizar, usaremos la base de datos **CASEN* que fue procesada en el práctico anterior, pero le añadimos una variable.
+Una vez cargado los paquetes a utilizar, debemos pasar al segundo paso: cargar los datos. Como indicamos al inicio, seguiremos utilizando los datos **CASEN* que fue procesada en el práctico anterior, pero le añadimos una variable.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-datos_proc <- readRDS(url("https://github.com/learn-R/www-learn-R-udp/raw/main/content/example/output/data/datos_proc.rds"))
+load(url("https://github.com/learn-R/06-class/raw/main/06-clase/output/data/datos_proc.RData"))
 ```
 
 ```{r, eval = F }
-datos_proc <- readRDS("output/data/datos_proc.rds")
+load("output/data/datos_proc.RData")
 ```
 
-### Variables a utilizar
+# 3. Explorar datos
 
 Pero ¿cómo sabremos cuales son las variables que componen la base de datos procesada?, para ello usaremos dos códigos para conocer la **base procesada** que usaremos:
 
@@ -66,43 +68,36 @@ el código `names`, nos entrega los nombres de las variables que componen el dat
 names(datos_proc)
 ```
 
-Mientras que la función ```head``` nos entrega el nombre y las primeras filas que la componen.
+Mientras que la función `head` nos entrega el nombre y las primeras 10 filas que la componen.
 
 ```{r head, echo=TRUE, results='markup'}
 head(datos_proc)
 ```
 
-Gracias a estos códigos sabemos que las variables utilizar serán 
+Gracias a estos códigos sabemos tenemos una aproximación de  las variables que podríamos utilizar. Por el práctico anterior sabemos que podemos explorar nuestros datos con `sjPlot::view_df()`
 
-````
-"sexo"             
-"edad_tramo"       
-"ocupacion"        
-"horas_mens"
-"ingreso_percapita" 
-"ife" 
-````
+```{r, echo=F}
+sjPlot::view_df(datos_proc)
+```
 
 # 4. Descripción de variables
 
-Una vez conocidas las variables que incluye nuestros datos procesados, ¿cómo podemos realizar un análisis descriptivo de nuestros reportes?
+Una vez conocidas las variables que incluye nuestros datos procesados, ¿cómo podemos realizar un análisis descriptivo para algún informe o reporte? Veamos algunas de las más comunes
 
 ## 4.1. Medidas de tendencia central
 
 Para conocer las medidas de tendencia central de las variables hay dos opciones. En la **primera** se puede pedir el estadístico manualmente, en la **segunda** se puede pedir una tabla resumen.
 
-Pero vamos paso a paso.
-
 ### Media
 
-Para conocer la media de una variable se utiliza el comando mean, su estructura es:
+Para conocer la media de una variable se utiliza la función `mean()`, su estructura es:
 
 ```{r ejemplo mean, eval=FALSE, include=TRUE}
 mean(datos$variable, na.rm=TRUE)
 ```
 
 
-El argumento ```na.rm=TRUE``` excluye del cálculo a los casos perdidos. Esto aplicado a nuestra variable se ve así:
+El argumento `na.rm=TRUE` excluye del cálculo a los casos perdidos. Esto aplicado a nuestra variable `ingreso_percapita` se ve así:
 
 ```{r casen mean, echo=TRUE, results='markup'}
 mean(datos_proc$ingreso_percapita, na.rm=TRUE)
@@ -110,19 +105,19 @@ mean(datos_proc$ingreso_percapita, na.rm=TRUE)
 
 ### Media recortada
 
-Pero que pasa si pienso que en la variable ```ingreso_percapita``` ¿esta influenciada por casos influyentes? para eso puedo pedir la media recortada agregando el argumento ```trim``` para explir al 5% de cada extremo
+Pero, ¿qué pasa si la variable `ingreso_percapita` esta influenciada por casos influyentes? Para eso puedo pedir la media recortada agregando el argumento `trim` para excluir al 5% de cada extremo
 
 ```{r casen mean trim, echo=TRUE, results='markup'}
 mean(datos_proc$ingreso_percapita, na.rm=TRUE, trim = 0.025)
 ```
 
-Acá podemos ver que el valor es distinto. 
+Aquí podemos ver que el valor es distinto. 
 
-Ya conocimos el promedio de la variable ```ingreso_percapita``` podemos informar cuanto es el promedio del ingreso en el hogar en Chile, pero antes de eso queremos saber ¿cuánto gana el 50% de los hogares? Para eso calcularemos la **mediana**
+Ya conocimos el promedio de la variable `ingreso_percapita` podemos informar cuanto es el promedio del ingreso en el hogar en Chile, pero antes de eso queremos saber ¿cuánto gana el 50% de los hogares? Para eso calcularemos la **mediana**
 
 ### Mediana
 
-Para el cálculo de la mediana se utiliza el comando median, su estructura es similar a la mean:
+Para el cálculo de la mediana se utiliza el comando median, su estructura es similar a la `mean()`:
 
 ```{r ejemplo median, eval=FALSE, include=TRUE}
 median(datos$variable, na.rm =TRUE)
@@ -132,70 +127,61 @@ median(datos$variable, na.rm =TRUE)
 median(datos_proc$ingreso_percapita, na.rm =TRUE)
 ```
 
-Ahora ya sabemos que al menos un 50% de las familias en Chile tienen por ingreso ```$229.184```
-
-Pero ¿qué pasa si quiero más medidas de posición? 
+Ahora ya sabemos que al menos un 50% de las familias en Chile tienen por ingreso `$229.184`
 
 ## 4.2. Medidas de posición 
 
-En este momento no me basta con la media y la mediana, quiero saber el ingreso mínimo y el ingreso máximo del los hogares, para ello se puede utilizar la función ```min``` y ```max```, su estructura no cambia respecto a los estadísticos anteriores:
-
-```{r ejemplo min y max, eval=FALSE, include=TRUE}
-min(datos$variable)
-max(datos$variable)
-
-```
+En este momento no me basta con la media y la mediana, quiero saber el ingreso mínimo y el ingreso máximo del los hogares, para ello se puede utilizar la función `min` y `max`, su estructura no cambia respecto a los estadísticos anteriores:
 
 ```{r casen min y max, echo=TRUE, results='markup'}
 min(datos_proc$ingreso_percapita)
 max(datos_proc$ingreso_percapita)
 ```
 
-A pesar de que ya conozco el mínimo, la mediana y el máximo, quiero conocer su distribución a partir de los cuantiles, para entregar un reporte con mayor precisión. Para ello utilizaremos la función ```quantile```, la estructura es la misma.
+## Un resumen
 
-```{r casen quantile, echo=TRUE, results='markup'}
-quantile(datos_proc$ingreso_percapita)
-```
-
-Pero, ¿y si quiero conocer un porcentaje específico de la variable? para ello se debe especificar dependiendo si quiero un sólo valor 
-
-```{r ejemplo quantile, eval=FALSE, include=TRUE}
-quantile(datos$variable, 0.25)
-```
-
-```{r casen quantile esp, echo=TRUE, results='markup'}
-quantile(datos_proc$ingreso_percapita, 0.25)
-```
-
-o un conjunto de valores, para eso usamos ```c()```
-
-```{r casen quantile esp conj, echo=TRUE, results='markup'}
-quantile(datos_proc$ingreso_percapita, c(0.25, 0.36, 0.89))
-```
-
-A pesar de calcularlo de forma individual, `sjmisc` tiene un comando que **resume** estos estadísticos, el cual es ```summary```
+Podemos obtener un resumen de todos estadísticos a partir de la función `summary()`. El argumento puede ser tanto una columna en particular como `ingreso_percapita` 
 
 ```{r casen summary, echo=TRUE, results='markup'}
 summary(datos_proc$ingreso_percapita)
 ```
 
-También podemos hacerlo a nivel de la base de datos con:
-
+También podemos hacerlo con todos los datos. Sólo que no tendrá mucho sentido para las variables nominales.
 ```{r casen summary base, echo=TRUE, results='markup'}
 summary(datos_proc)
 ```
 
-sólo que no tendrá mucho sentido para las variables nominales.
+`summary()` es una función muy potente, dado que no solo permite resúmenes de data.frames (datos), sino que también de otros objetos en R (como los modelos).
 
-Perfecto! ya tenemos mucha información sobre la variable ```ingreso_percapita```, pero ¿qué hay de las variables con un nivel de medición nominal?
+Ahora bien tiene limitantes para interactuar con `dplyr` y generar archivos de salida. Por ello ocuparemos `descr` de `sjmisc`
 
-Para ello sacaremos las 
+```{r, eval=T}
+sjmisc::descr(
+  datos_proc$ingreso_percapita,
+  show = "all",
+  out = "viewer",
+  encoding = "UTF-8",
+  file = "output/figures/tabla-ingreso.doc")
+```
+
+De más variables
+
+```{r, eval=T}
+datos_proc %>%
+select(ingreso_percapita, ife, horas_mens) %>% 
+sjmisc::descr(
+  show = "all",
+  out = "viewer",
+  encoding = "UTF-8",
+  file = "output/figures/tabla1.doc")
+```
+
 
 ## 4.3. Frecuencias 
 
 ### Frecuencias absolutas
 
-Para conocer las frecuencias absolutas de una variable usaremos la función ```table```, esta nos arroja la frecuencia por cada categoria de respuesta
+Para conocer las frecuencias absolutas de una variable usaremos la función ```table```, esta nos arroja la frecuencia por cada categoría de respuesta
 
 ```{r casen table, echo=TRUE, results='markup'}
 table(datos_proc$sexo) 
@@ -226,7 +212,7 @@ prop.table(table(datos_proc$ocupacion))*100
 prop.table(table(datos_proc$edad_tramo))*100
 ```
 
-Nuevamente calculamos los estadísticos de forma individual, pero si queremos una tabla general usaremos la función ```frq```. Esta función devuelve una tabla de frecuencias de vectores etiquetados, como marco de datos.
+Nuevamente calculamos los estadísticos con paquete base, pero si queremos una tabla general usaremos la función `frq`. Esta función devuelve una tabla de frecuencias de vectores etiquetados, como marco de datos.
 
 ```{r casen frq error, echo=TRUE, results='markup'}
 frq(datos_proc$sexo) 
