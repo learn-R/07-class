@@ -225,6 +225,8 @@ frq(datos_proc$edad_tramo)
 
 Para ello debemos remover las etiquetas, ya que generan conflicto, para eso usaremos la funcion ```remove_all_labels``` del paquete ```sjlabelled```
 
+# sacar
+
 ```{r ejemplo etiquetas, eval=FALSE, include=TRUE}
 datos_proc <- sjlabelled::remove_all_labels(datos_proc)
 ```
@@ -307,9 +309,9 @@ Para los graficos, tenemos los siguientes códigos
 1. Gráfico de barras de frecuencias simple
 
 Si quisieramos presentar gráficos que entreguen la frecuencia de cada categoría de respuesta, podemos presentarla de la siguiente forma:
-
+# aqui no es necesario crear un objeto 
 ```{r casen barras simple, echo=TRUE, results='markup'}
-a <- plot_frq(datos_proc, edad_tramo,
+plot_frq(datos_proc, edad_tramo,
           title = "Gráfico de frecuencias, barras",
           type = c("bar"))
 ```
@@ -319,8 +321,7 @@ a <- plot_frq(datos_proc, edad_tramo,
 Además de la visualización es importante el guardar los datos que se producen y `sjPlot` tiene su propio código para hacerlo a través de la función ```save_plot()```, su estructura es así:
 
 ```{r ejemplo save, eval=FALSE, include=TRUE}
-save_plot(
-  filename,  #se deja el formato del archivo (.png, .jpg, .svg o .tif) y la ruta de la carpeta
+save_plot(last_plot(),  #se deja el formato del archivo (.png, .jpg, .svg o .tif) y la ruta de la carpeta
   fig = last_plot()) #se deja el objeto creado
 ```
 
@@ -329,7 +330,7 @@ Así guardaríamos el gráfico anterior
 ```{r eval=TRUE, include=TRUE}
 save_plot("../06-class/06-clase/output/img/tab.png", fig = a)
 ```
-
+#arreglar ruta
 {{< /div >}}
 
 
@@ -364,7 +365,8 @@ datos_proc <- dplyr::filter(datos_proc, ingreso_percapita <= 2000000)
 Veamos como quedo el histograma
 
 ```{r casen histograma, echo=TRUE, results='markup'}
-plot_frq(datos_proc, ingreso_percapita,
+datos_proc %>%  filter(ingreso_percapita <= 2000000) %>% 
+plot_frq(., ingreso_percapita,
           title = "Histograma",
           type = c("histogram"))
 ```
