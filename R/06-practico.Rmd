@@ -29,11 +29,11 @@ En este práctico utilizamos los **datos** procesados *CASEN 2020*, que proviene
 
 # 1. Paquetes a utilizar
 
-Para este práctico utilizaremos principalmente, las librerias `sjmisc` y `sjPlot`. 
+Para este práctico utilizaremos principalmente, las librerías `sjmisc` y `sjPlot`. 
 
 `sjmisc`: esta paquete tiene múltiples funciones, desde la transformación de datos y variables. Este paquete suele complementar a  `dplyr` de `tidyverse` en sus funciones. 
 
-`sjPlot`: su principal función es la visualización de datos para estadística en ciancias sociales mediante tablas y graficos.
+`sjPlot`: su principal función es la visualización de datos para estadística en ciencias sociales mediante tablas y gráficos.
 
 Cargaremos los paquetes con `pacman` [revisar práctico anterior](https://learn-r-udp.netlify.app/example/03-practico/)
 
@@ -62,7 +62,7 @@ load("output/data/datos_proc.RData")
 
 Pero ¿cómo sabremos cuales son las variables que componen la base de datos procesada?, para ello usaremos dos códigos para conocer la **base procesada** que usaremos:
 
-el código `names`, nos entrega los nombres de las variables que componen el dataset
+el código `names`, nos entrega los nombres de las variables que componen el data set
 
 ```{r names, echo=TRUE, results='markup'}
 names(datos_proc)
@@ -74,10 +74,11 @@ Mientras que la función `head` nos entrega el nombre y las primeras 10 filas qu
 head(datos_proc)
 ```
 
-Gracias a estos códigos sabemos tenemos una aproximación de  las variables que podríamos utilizar. Por el práctico anterior sabemos que podemos explorar nuestros datos con `sjPlot::view_df()`
+Gracias a estos códigos sabemos que tenemos una aproximación de las variables que podríamos utilizar. Por el práctico anterior sabemos que podemos explorar nuestros datos con `sjPlot::view_df()`
 
 ```{r, echo=F}
-sjPlot::view_df(datos_proc)
+sjPlot::view_df(datos_proc,
+                encoding = "UTF-8")
 ```
 
 # 4. Descripción de variables
@@ -86,7 +87,7 @@ Una vez conocidas las variables que incluye nuestros datos procesados, ¿cómo p
 
 ## 4.1. Medidas de tendencia central
 
-Para conocer las medidas de tendencia central de las variables hay dos opciones. En la **primera** se puede pedir el estadístico manualmente, en la **segunda** se puede pedir una tabla resumen.
+Para conocer las medidas de tendencia central de las variables hay dos opciones. En la **primera** se puede pedir el estadístico manualmente, en la **segunda** se puede pedir una tabla resumen. 
 
 ### Media
 
@@ -127,16 +128,9 @@ median(datos$variable, na.rm =TRUE)
 median(datos_proc$ingreso_percapita, na.rm =TRUE)
 ```
 
-Ahora ya sabemos que al menos un 50% de las familias en Chile tienen por ingreso `$229.184`
+Ahora ya sabemos que al menos un 50% de las familias en Chile tienen por ingreso `$229.184`.
 
-## 4.2. Medidas de posición 
-
-En este momento no me basta con la media y la mediana, quiero saber el ingreso mínimo y el ingreso máximo del los hogares, para ello se puede utilizar la función `min` y `max`, su estructura no cambia respecto a los estadísticos anteriores:
-
-```{r casen min y max, echo=TRUE, results='markup'}
-min(datos_proc$ingreso_percapita)
-max(datos_proc$ingreso_percapita)
-```
+Ya tenemos los estadísticos principales, pero ¿cómo los reportamos? ¿tenemos que sacar el promedio de cada variable una por una? **¡No!**, para ello `sjmisc` tiene diferentes funciones, que veremos a continuación
 
 ## Un resumen
 
@@ -147,6 +141,7 @@ summary(datos_proc$ingreso_percapita)
 ```
 
 También podemos hacerlo con todos los datos. Sólo que no tendrá mucho sentido para las variables nominales.
+
 ```{r casen summary base, echo=TRUE, results='markup'}
 summary(datos_proc)
 ```
@@ -155,18 +150,22 @@ summary(datos_proc)
 
 Ahora bien tiene limitantes para interactuar con `dplyr` y generar archivos de salida. Por ello ocuparemos `descr` de `sjmisc`
 
-```{r, eval=T}
-sjmisc::descr(
-  datos_proc$ingreso_percapita,
-  show = "all",
-  out = "viewer",
-  encoding = "UTF-8",
-  file = "output/figures/tabla-ingreso.doc")
+```{r , eval=FALSE, message=FALSE, warning=FALSE, include=TRUE}
+sjmisc::descr(datos_proc$ingreso_percapita,
+        show = "all",
+        out = "viewer",
+        encoding = "UTF-8",
+        file = "output/figures/tabla-ingreso.doc")
 ```
+
+```{r echo=FALSE}
+sjmisc::descr(datos_proc$ingreso_percapita)
+```
+
 
 De más variables
 
-```{r, eval=T}
+```{r, , eval=FALSE, message=FALSE, warning=FALSE, include=TRUE}
 datos_proc %>%
 select(ingreso_percapita, ife, horas_mens) %>% 
 sjmisc::descr(
@@ -176,127 +175,50 @@ sjmisc::descr(
   file = "output/figures/tabla1.doc")
 ```
 
+```{r echo=FALSE}
+datos_proc %>%
+select(ingreso_percapita, ife, horas_mens) %>% 
+sjmisc::descr()
+```
+
+
+Acá podemos ver la variable `var`, el tipo de variable `type`, su etiqueta `label`, los casos válidos `n`, los casos perdidos `NA.prc`, las medidas de tendencia central y las de dispersión. `sjmisc` tiene muchos beneficios, ya que cómo interactúa con el mundo `tidyverse` es fácil de complementar con funciones como `select` de `dplyr`. Además con la función `file` se puede exportar automáticamente la tabla para los reportes.
+
 
 ## 4.3. Frecuencias 
 
 ### Frecuencias absolutas
 
-Para conocer las frecuencias absolutas de una variable usaremos la función ```table```, esta nos arroja la frecuencia por cada categoría de respuesta
+Para conocer las frecuencias absolutas de una variable se podría usar la función `table`, esta nos arroja la frecuencia por cada categoría de respuesta
 
 ```{r casen table, echo=TRUE, results='markup'}
 table(datos_proc$sexo) 
-table(datos_proc$ife) 
-table(datos_proc$ocupacion)
-table(datos_proc$edad_tramo)
 ```
 
-### Frecuencias relativas
+También podríamos usar la función `flat_table`, esta puede agrupar más variables y agruparlas.
 
-Pero ahora queremos la frecuencia relativa, para ello usamos la función ```prop.table``` dentro de la función ```table```
-
-```{r casen prop.table, echo=TRUE, results='markup'}
-prop.table(table(datos_proc$sexo))
-prop.table(table(datos_proc$ife))
-prop.table(table(datos_proc$ocupacion))
-prop.table(table(datos_proc$edad_tramo))
+```{r casen flat_table, echo=TRUE, results='markup'}
+flat_table(datos_proc, sexo, ocupacion, ife)
 ```
 
-### Frecuencias relativas en porcentaje
-
-Perfecto, pero para el reporte prefiero hablar de los datos en porcentajes, para ello agregamos ```*100```
-
-```{r casen prop.table*100, echo=TRUE, results='markup'}
-prop.table(table(datos_proc$sexo))*100
-prop.table(table(datos_proc$ife))*100
-prop.table(table(datos_proc$ocupacion))*100
-prop.table(table(datos_proc$edad_tramo))*100
-```
-
-Nuevamente calculamos los estadísticos con paquete base, pero si queremos una tabla general usaremos la función `frq`. Esta función devuelve una tabla de frecuencias de vectores etiquetados, como marco de datos.
+El problema es ¿cómo podríamos reportarla en nuestros informes? Si queremos una tabla general usaremos la función `frq`. Esta función devuelve una tabla de frecuencias de vectores etiquetados, como marco de datos.
 
 ```{r casen frq error, echo=TRUE, results='markup'}
-frq(datos_proc$sexo) 
-frq(datos_proc$ocupacion)
-frq(datos_proc$ife)
-frq(datos_proc$edad_tramo)
+sjmisc::frq(datos_proc$sexo,
+        out = "viewer",
+         title = "Frecuencias",
+        encoding = "UTF-8",
+         file = "output/figures/tabla2.doc") 
 ```
 
-¿Qué paso? Nos aparece un error que dice ```Error: Can't convert <haven_labelled> to <double>.```
-
-Para ello debemos remover las etiquetas, ya que generan conflicto, para eso usaremos la funcion ```remove_all_labels``` del paquete ```sjlabelled```
-
-# sacar
-
-```{r ejemplo etiquetas, eval=FALSE, include=TRUE}
-datos_proc <- sjlabelled::remove_all_labels(datos_proc)
-```
-
-Ahora sí podremos conocer la tabla de frecuencias
-
-```{r casen frq, echo=TRUE, results='markup'}
-frq(datos_proc$sexo) 
-frq(datos_proc$ocupacion)
-frq(datos_proc$ife)
-frq(datos_proc$edad_tramo)
-```
-
-Ahora si queremos sacar la tabla de frecuencias para toda la base de datos usamos
-
-```{r casen frq data, echo=TRUE, results='markup'}
-frq(datos_proc)
-```
-
-Pero automáticamente nos mostrará que para la variable ```ingreso_percapita``` no se calculará la frecuencia de cada categoría por ser numérica
-
-## 4.4. Medidas de dispersión
-
-Ahora que ya conocemos las medidas de tendencia central, de posición y las frecuencias, **nos falta algo súper relevante** _¡las medidas de dispersión!_
-
-### Rango 
-
-Para calcular el rango tenemos la función ```range```
-
-```{r casen range, echo=TRUE, results='markup'}
-range(datos_proc$ingreso_percapita)
-```
-
-### Varianza
-
-Mientras que para el cálculo de la varianza tenemos la función ```var```:  
-
-```{r casen var, echo=TRUE, results='markup'}
-var(datos_proc$ingreso_percapita)
-```
-
-### Desviación Estándar
-
-Finalmente, pero no menos importante, con la función ```sd``` calculamos la desviación estándar  
-
-```{r casen sd, echo=TRUE, results='markup'}
-sd(datos_proc$ingreso_percapita)
-```
-
-Estas funciones abarcan los estadísticos de forma indivudual, pero se puede generar una tabla que abarca todos los estadísticos, para esto usaremos la función ```descr``` de `sjmisc`. Este código imprime una estadística descriptiva básica, incluidas las etiquetas de las variables.
-
-```{r casen descr, echo=TRUE, results='markup'}
-descr(datos_proc, ingreso_percapita) 
-```
-
-Ahora si queremos calcular estos estadístico a toda la base de datos usamos el código:
-
-```{r casen descr base, echo=TRUE, results='markup'}
-descr(datos_proc)
-```
-
-¡Pero recuerda que esto no tendrá sentido en todas las variables!
 
 # 5. Visualización
 
 Ahora que ya sabemos como tener todos los estadísticos necesarios para escribir nuestros reportes, viene el segundo paso *visualizar los estadísticos*. Esto lo haremos con `sjPlot`
 
-Para visualizar las frecuencias usaremos la función ```plot_frq```, su estructura es la siguiente:
+Para visualizar las frecuencias usaremos la función `plot_frq`, su estructura es la siguiente:
 
-```{r ejemplo frecuencias, eval=FALSE, include=TRUE}
+```{r ejemplo frecuencias, eval=FALSE, message=FALSE, warning=FALSE, include=TRUE}
 plot_frq(datos,  #base
   ...,          #variable
   title = "",   # título
@@ -304,13 +226,14 @@ plot_frq(datos,  #base
   
 ```
 
-Para los graficos, tenemos los siguientes códigos
+Para los gráficos, tenemos los siguientes códigos
 
 1. Gráfico de barras de frecuencias simple
 
-Si quisieramos presentar gráficos que entreguen la frecuencia de cada categoría de respuesta, podemos presentarla de la siguiente forma:
-# aqui no es necesario crear un objeto 
-```{r casen barras simple, echo=TRUE, results='markup'}
+Si quisiéramos presentar gráficos que entreguen la frecuencia de cada categoría de respuesta, podemos presentarla de la siguiente forma:
+
+
+```{r casen barras simple, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
 plot_frq(datos_proc, edad_tramo,
           title = "Gráfico de frecuencias, barras",
           type = c("bar"))
@@ -318,35 +241,33 @@ plot_frq(datos_proc, edad_tramo,
 
 {{< div "note" >}}
 
-Además de la visualización es importante el guardar los datos que se producen y `sjPlot` tiene su propio código para hacerlo a través de la función ```save_plot()```, su estructura es así:
+Además de la visualización es importante el guardar los datos que se producen y `sjPlot` tiene su propio código para hacerlo a través de la función `save_plot()`, su estructura es esta:
 
 ```{r ejemplo save, eval=FALSE, include=TRUE}
-save_plot(last_plot(),  #se deja el formato del archivo (.png, .jpg, .svg o .tif) y la ruta de la carpeta
-  fig = last_plot()) #se deja el objeto creado
+save_plot(last_plot())  #se deja el formato del archivo (.png, .jpg, .svg o .tif) y la ruta de la carpeta
 ```
 
 Así guardaríamos el gráfico anterior
 
-```{r eval=TRUE, include=TRUE}
-save_plot("../06-class/06-clase/output/img/tab.png", fig = a)
+```{r eval=F, include=TRUE}
+save_plot(last_plot("/output/img/tab.png"))
 ```
-#arreglar ruta
 {{< /div >}}
 
 
-2. Grafico de puntos
+2. Gráfico de puntos
 
 Si tenemos más categorías y queremos mejorar el reporte, podemos usar este código:
 
-```{r casen puntos simple, echo=TRUE, results='markup'}
+```{r casen puntos simple, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
 plot_frq(datos_proc, edad_tramo,
           title = "Gráfico de frecuencias, puntos",
           type = c("dot"))
 ```
 
-También puedemos cambiar el orden del eje x e y
+También podemos cambiar el orden del eje x e y
 
-```{r casen puntos cambiados, echo=TRUE, results='markup'}
+```{r casen puntos cambiados, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
 plot_frq(datos_proc$edad_tramo, type = "dot", show.ci = TRUE, sort.frq = "desc",
   coord.flip = TRUE, expand.grid = TRUE, vjust = "bottom", hjust = "left", title = "Gráfico de frecuencias, puntos cambiado"
 )
@@ -354,17 +275,9 @@ plot_frq(datos_proc$edad_tramo, type = "dot", show.ci = TRUE, sort.frq = "desc",
        
 3. Histogramas        
        
-Otra función que podemos hacer es graficar histogramas, sin embargo, como ya hemos visto, la variable ```ingreso_percapita``` tiene casos muy altos que distorsionan la variable. Para solucionar esto, ocuparemos lo aprendido en [el práctico anterior](https://learn-r-udp.netlify.app/example/03-practico/) y filtraremos la variable sacando los ingresos mayores a $2.000.000, con la función ```filter``` de ```dplyr```
+Otra función que podemos hacer es graficar histogramas, sin embargo, como ya hemos visto, la variable `ingreso_percapita` tiene casos muy altos que distorsionan la variable. Para solucionar esto, ocuparemos lo aprendido en [el práctico anterior](https://learn-r-udp.netlify.app/example/03-practico/) y filtraremos la variable sacando los ingresos mayores a `$2.000.000`, con la función `filter` de `dplyr`
 
-
-```{r casen filter, echo=TRUE, results='markup'}
-datos_proc <- dplyr::filter(datos_proc, ingreso_percapita <= 2000000)
-```
-
-
-Veamos como quedo el histograma
-
-```{r casen histograma, echo=TRUE, results='markup'}
+```{r casen histograma, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
 datos_proc %>%  filter(ingreso_percapita <= 2000000) %>% 
 plot_frq(., ingreso_percapita,
           title = "Histograma",
@@ -376,7 +289,8 @@ plot_frq(., ingreso_percapita,
 Ahora que vemos la distribución del histograma, ¿cómo podemos ver su densidad?, es muy simple, para ello haremos un gráfico de densidad con el siguiente código
 
 ```{r casen densidad, echo=TRUE, results='markup'}
-plot_frq(datos_proc, ingreso_percapita,
+datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
+plot_frq(., ingreso_percapita,
           title = "Gráfico de densidad",
           type = c("density"))
 ```
@@ -384,7 +298,7 @@ plot_frq(datos_proc, ingreso_percapita,
 
 5. Gráfico de líneas
         
-¿Que pasa si me piden un gráfico de lineas?, también hay una función para eso. En esta ocasión queremos graficar la variable ```ife``` y usaremos este código:
+¿Que pasa si me piden un gráfico de lineas?, también hay una función para eso. En esta ocasión queremos graficar la variable `ife` y usaremos este código:
 
 ```{r casen lineas, echo=TRUE, results='markup'}
 plot_frq(datos_proc, ife,
@@ -397,56 +311,70 @@ plot_frq(datos_proc, ife,
 
 Para graficar los estadísticos de una variable, podemos hacerlo a través de un gráfico de cajas, para ello usaremos este código:
 
-```{r casen box, echo=TRUE, results='markup'}
-plot_frq(datos_proc, ingreso_percapita,
+```{r casen box, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
+plot_frq(., ingreso_percapita,
           title = "Gráfico de caja",
           type = c("boxplot"))
 ```
 
           
-7. Gráfico de violin
+7. Gráfico de violín
 
-Finalmente, si queremos presentar gráficos de violin, usamos este código
+Finalmente, si queremos presentar gráficos de violín, usamos este código
           
-```{r casen violin, echo=TRUE, results='markup'}
-plot_frq(datos_proc, ingreso_percapita,
+```{r casen violin, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
+    plot_frq(., ingreso_percapita,
           title = "Gráfico de violín",
           type = c("violin"))
 ```
           
-Como pueden ver, el único argumento que se modificaba era ```type = ```, es decir, para hacer diversos gráficos, sólo se debe especificar el tipo de grafico que queremos.
+Como pueden ver, el único argumento que se modificaba era `type = `, es decir, para hacer diversos gráficos, sólo se debe especificar el tipo de gráfico que queremos.
 
 
 8. Gráfico de nube de puntos
 
-Ahora, si quisieramos graficar la distribución de dos variables, podemos hacerlo con la función ```plot_scatter```, esta muestra el diagrama de dispersión de dos variables.
+Ahora, si quisiéramos graficar la distribución de dos variables, podemos hacerlo con la función `plot_scatter`, esta muestra el diagrama de dispersión de dos variables.
 
-```{r casen scatter, echo=TRUE, results='markup'}
-plot_scatter(datos_proc, sexo, ingreso_percapita)
+```{r casen scatter, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
+   plot_scatter(., sexo, ingreso_percapita)
 ```
 
 Además, se puede agregar líneas ajustadas para cada grupo.
 
-```{r casen scatter lineas, echo=TRUE, results='markup'}
-plot_scatter(datos_proc, sexo, ingreso_percapita, jitter = .4)
+```{r casen scatter lineas, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
+   plot_scatter(., sexo, ingreso_percapita, jitter = .4)
 ```
 
 También es posible agregar una variable de ocupación al diagrama de dispersión.
 
-```{r casen scatter 3 var, echo=TRUE, results='markup'}
-plot_scatter(datos_proc, sexo, ingreso_percapita, ocupacion)
+```{r casen scatter 3 var, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
+    plot_scatter(., sexo, ingreso_percapita, ocupacion, jitter = .4)
 ```
 
-Pero ¿si quiero una mejor visualización? para eso usamos este código que nos permite hacer dos gráficos para cada categoria de sexo
+Pero ¿si quiero una mejor visualización? para eso usamos este código que nos permite hacer dos gráficos para cada categoría de sexo
 
-```{r casen scatter sep, echo=TRUE, results='markup'}
-plot_scatter(datos_proc, ingreso_percapita, edad_tramo, sexo,
+```{r casen scatter sep, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
+    plot_scatter(., ingreso_percapita, ocupacion, sexo,
              fit.grps = "loess", grid = TRUE)
 ```
 
-Ahora que ya hemos graficado las frecuencias de las variables, vamos a graficar frecuencias agrupadas, para ello usaremos la función ```plot:grpfrq``` de `sjPlot`, su estructura es la siguiente
+También podríamos probar con la variable `edad_tramo` y quedaría así:
 
-```{r ejemplo frecuencias agrup, eval=FALSE, include=TRUE}
+```{r casen scatter sep2, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
+    plot_scatter(., ingreso_percapita, edad_tramo, sexo,
+             fit.grps = "loess", grid = TRUE)
+```
+
+Ahora que ya hemos graficado las frecuencias de las variables, vamos a graficar frecuencias agrupadas, para ello usaremos la función `plot:grpfrq` de `sjPlot`, su estructura es la siguiente
+
+```{r ejemplo frecuencias agrup, eval=FALSE, message=FALSE, warning=FALSE, include=TRUE}
 plot_grpfrq(
   var.cnt,
   var.grp,
@@ -455,20 +383,20 @@ plot_grpfrq(
 
 1. Gráfico de barras
 
-La primera opción que nos entrega este código son los gráficos de barra, para usarlo queremos saber cuantos hombres y mujeres trabajaron al menos una hora la semana pasada, para ello graficaremos la variable ```sexo``` y ```ocupación```
+La primera opción que nos entrega este código son los gráficos de barra, para usarlo queremos saber cuantos hombres y mujeres trabajaron al menos una hora la semana pasada, para ello graficaremos la variable `sexo` y `ocupacion`
 
-```{r casen frec agrup barr, echo=TRUE, results='markup'}
+```{r casen frec agrup barr, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
 plot_grpfrq(datos_proc$sexo, datos_proc$ocupacion,
   type = c("bar"), title = "Gráfico de barras")
 ```
 
 Podemos ver que no solo nos muestra la frecuencia absoluta, sino que también la relativa en porcentaje
 
-Pero además podemos ver agregar una tercera categoría, que es el total de ambas categorias. Para este ejercicio conoceremos que tramo de edad trabajo la semana pasada.
+Pero además podemos ver agregar una tercera categoría, que es el total de ambas categorías. Para este ejercicio conoceremos que tramo de edad trabajo la semana pasada.
 
-Para este ejercicio usaremos la función ```plot_xtab```, de la misma librería
+Para este ejercicio usaremos la función `plot_xtab`, de la misma librería
 
-```{r  casen frec agrup barr 2, echo=TRUE, results='markup'}
+```{r casen frec agrup barr 2, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
 plot_xtab(datos_proc$edad_tramo, datos_proc$ocupacion, title = "Gráfico de barras")
 ```
 
@@ -476,70 +404,80 @@ plot_xtab(datos_proc$edad_tramo, datos_proc$ocupacion, title = "Gráfico de barr
 
 Con la misma función podemos graficar mediante barras horizontales
 
-```{r casen frec agrup barr hor, echo=TRUE, results='markup'}
-plot_xtab(datos_proc$edad_tramo, datos_proc$ocupacion, margin = "row", bar.pos = "stack",
+```{r casen frec agrup barr hor, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+plot_xtab(datos_proc$edad_tramo, datos_proc$ocupacion, margin = "row", 
+          bar.pos = "stack",
+          title = "Gráfico de barras horizontales",
          show.summary = TRUE, coord.flip = TRUE)
 ```
 
 2. Gráfico de puntos
 
-Ahora continuaremos con los gráficos de puntos, ya que quiero presentar la relación entre ```sexo``` y ```ocupacion``` mediante otro gráfico:
+Ahora continuaremos con los gráficos de puntos, ya que quiero presentar la relación entre `sexo` y `ocupacion` mediante otro gráfico:
 
-```{r casen graf pun agrup, echo=TRUE, results='markup'}
+```{r casen graf pun agrup, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
 plot_grpfrq(datos_proc$sexo, datos_proc$ocupacion,
-  type = c("dot"))
+            title = "Gráfico de puntos",
+            type = c("dot"))
   
 ```
 
   
 3. Gráfico de líneas
 
-Otra opción que tiene esta función, es la creación de gráficos de líneas, para ello conoceremos la relación entre el tramo etáreo y el recibir el IFE
+Otra opción que tiene esta función, es la creación de gráficos de líneas, para ello conoceremos la relación entre el tramo etario y el recibir el IFE
 
-```{r casen graf lin agrup, echo=TRUE, results='markup'}
+```{r casen graf lin agrup, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
 plot_grpfrq(datos_proc$edad_tramo, datos_proc$ife,
-  type = c("line"))
+            title = "Gráfico de línea",
+            type = c("line"))
   
 ```
 
-También podemos ver la relación de el tramo etáreo y si trabajó la semana pasada
+También podemos ver la relación de el tramo etario y si trabajó la semana pasada
 
-```{r casen graf line agrup 2, echo=TRUE, results='markup'}
-plot_grpfrq(datos_proc$edad_tramo, datos_proc$ocupacion, type = "line")
+```{r casen graf line agrup 2, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+plot_grpfrq(datos_proc$edad_tramo, datos_proc$ocupacion, 
+            title = "Gráfico de línea",
+            type = "line")
 ```
          
 
 4. Gráfico de cajas
 
-Ahora si queremos conocer cómo interactua el ingreso con el tramo etáreo, podemos visualizarlo mediante un gráfico de cajas
+Ahora si queremos conocer cómo interactúa las horas de trabajo con el tramo etario, podemos visualizarlo mediante un gráfico de cajas
 
-```{r casen graf caj, echo=TRUE, results='markup'}
-plot_grpfrq(datos_proc$ingreso_percapita, datos_proc$edad_tramo,
-  type = c("boxplot"))
+```{r casen graf caj, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+plot_grpfrq(datos_proc$horas_mens, datos_proc$edad_tramo,
+            title = "Gráfico de caja",
+             type = c("boxplot"))
 ```
 
-Además, se puede incorporar una tercera variable, en este caso lo haremos con la variable ```sexo```
+Además, se puede incorporar una tercera variable, en este caso lo haremos con la variable `sexo`
 
-```{r casen box 3 var, echo=TRUE, results='markup'}
-plot_grpfrq(datos_proc$ingreso_percapita, datos_proc$edad_tramo, intr.var = datos_proc$sexo, type = "box")
+```{r casen box 3 var, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+plot_grpfrq(datos_proc$horas_mens, datos_proc$edad_tramo, intr.var = datos_proc$sexo, 
+            title = "Gráfico de cajas",
+            type = "box")
 ```
 
 5. Gráfico de violín
 
-Finalmente, para generar un gráfico de violin, añadiremos el argumento ```type = "violin"```
+Finalmente, para generar un gráfico de violín, añadiremos el argumento `type = "violin"`
 
-```{r casen graf violin agrup, echo=TRUE, results='markup'}
-plot_grpfrq(datos_proc$ingreso_percapita, datos_proc$edad_tramo,
-  type = c("violin"))
+```{r casen graf violin agrup, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
+plot_grpfrq(datos_proc$horas_mens, datos_proc$edad_tramo,
+            title = "Gráfico de violín",
+            type = c("violin"))
 ```
 
-Nuevamente, la función nos permite la creación de múltiples gráficos, sólo se debe cambiar el argumento ```type =```
+Nuevamente, la función nos permite la creación de múltiples gráficos, sólo se debe cambiar el argumento `type =`
 
 # 6. Tablas de contingencia
 
 ¡No podemos terminar sin saber cómo hacer tablas de frecuencias cruzadas!
 
-Por suerte `sjPlot` tiene la función ```sjt.xtab```, que nos entrega tablas de frecuencias cruzadas
+Por suerte `sjPlot` tiene la función `sjt.xtab`, que nos entrega tablas de frecuencias cruzadas
 
 ```{r casen tab cruz, echo=TRUE, results='markup'}
 sjt.xtab(datos_proc$sexo, datos_proc$ife,  title = "Tabla de contingencias",
@@ -549,37 +487,39 @@ sjt.xtab(datos_proc$sexo, datos_proc$ife,  title = "Tabla de contingencias",
 
 ¿Qué pasó? ¿por qué salen esos símbolos raros en la tabla? 
 
-¡Es por la codificación!, para ello le agregamos el argumento ```encoding = "UTF-8"``` y ya tenemos nuestra tabla de frecuencias cruzadas
+¡Es por la codificación!, para ello le agregamos el argumento `encoding = "UTF-8"` y ya tenemos nuestra tabla de frecuencias cruzadas
 
 ```{r casen tab cruz encoding, echo=TRUE, results='markup'}
 sjt.xtab(datos_proc$sexo, datos_proc$ife,
          show.col.prc=TRUE,
-         show.summary=FALSE, encoding = "UTF-8")
+         show.summary=FALSE, 
+         encoding = "UTF-8", 
+         title = "Tabla de contingencia",
+         file = "output/figures/tabla3.doc")
 ```
 
 # 7. Correlación
 
-Ahora veremos estadísticos bivariados, como la correlación, en esta ocasión generaremos una tabla de correlación entre las variables ```horas_mens``` y ```ingreso_percapita```, para eso usaremos la función ```tab_corr``` de `sjPlot`
+Ahora veremos estadísticos bivariados, como la correlación, en esta ocasión generaremos una tabla de correlación entre las variables `horas_mens` y `ingreso_percapita`, para eso usaremos la función `tab_corr` de `sjPlot`
 
-Previamente debemos seleccionar en un objeto las variables a utilizar, ya que no tiene sentido incluir en el análisis variables nominales
-```{r casen selec, echo=TRUE, results='markup'}
-cor <- datos_proc %>%  select (horas_mens, ingreso_percapita)
-```
-
-Luego tendremos una tabla como esta
+Previamente debemos seleccionar las variables a utilizar, ya que no tiene sentido incluir en el análisis variables nominales
 
 ```{r casen corr, echo=TRUE, results='markup'}
-tab_corr(cor,
+datos_proc %>%
+select(ingreso_percapita, horas_mens) %>% 
+tab_corr(.,
          triangle = "lower",   
-         title = "Tabla de correlación")
+         title = "Tabla de correlación",
+         encoding = "UTF-8", 
+         file = "output/figures/tabla4.doc")
 ```
 
 
 # 8. Anova
 
-Finalmente, si queremos reportar un análisis de Anova, no podemos dejar de lado este gráfico que nos otorga la función ```sjp.aov1``` del paquete `sjPlot`
+Finalmente, si queremos reportar un análisis de Anova, no podemos dejar de lado este gráfico que nos otorga la función `sjp.aov1` del paquete `sjPlot`
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 sjp.aov1(datos_proc$ingreso_percapita, datos_proc$sexo, title = "Anova")
 ```
 
