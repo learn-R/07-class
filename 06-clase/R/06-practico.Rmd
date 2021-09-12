@@ -554,11 +554,11 @@ tab_stackfrq(as.data.frame(datos_proc %>% select("o3", "o4", "o6")),
 A la hora de graficar Chi2, debemos asegurarnos con la función `as.factor` que las variables a utilizar sean de tipo factor, luego utilizamos la función `sjp.chi2` de `sjPlot` para crear la tabla, finalmente con el argumento `axis.labels` asignamos la etiqueta de cada variable
 
 ```{r casen_x2, echo=TRUE, message=FALSE, warning=FALSE}
-data.frame(as.factor(sample(datos_proc$ocupacion, replace = TRUE)),
-                 as.factor(sample(datos_proc$o2, replace = TRUE)),
-                 as.factor(sample(datos_proc$o3, replace = TRUE)),
-                 as.factor(sample(datos_proc$o4, replace = TRUE)),
-                 as.factor(sample(datos_proc$o6, replace = TRUE))) %>% 
+data.frame(as_factor(sample(datos_proc$ocupacion, replace = TRUE)),
+                 as_factor(sample(datos_proc$o2, replace = TRUE)),
+                 as_factor(sample(datos_proc$o3, replace = TRUE)),
+                 as_factor(sample(datos_proc$o4, replace = TRUE)),
+                 as_factor(sample(datos_proc$o6, replace = TRUE))) %>% 
   sjp.chi2(., 
          title = "Gráfico de Chi2",
          axis.labels  = c("Trabajó al menos una hora", "realizó alguna actividad", "Tenía algún empleo", "Ha trabajado alguna vez", "Busco empleo"))
