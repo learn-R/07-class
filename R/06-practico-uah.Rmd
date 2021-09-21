@@ -31,9 +31,13 @@ En este práctico utilizamos los **datos** procesados *CASEN 2020*, que proviene
 
 Para este práctico utilizaremos principalmente, las librerías `sjmisc` y `sjPlot`. 
 
-`sjmisc`: esta paquete tiene múltiples funciones, desde la transformación de datos y variables. Este paquete suele complementar a  `dplyr` de `tidyverse` en sus funciones. 
+- `sjmisc`: esta paquete tiene múltiples funciones, desde la transformación de datos y variables. Este paquete suele complementar a  `dplyr` de `tidyverse` en sus funciones. 
 
-`sjPlot`: su principal función es la visualización de datos para estadística en ciencias sociales mediante tablas y gráficos.
+- `sjPlot`: su principal función es la visualización de datos para estadística en ciencias sociales mediante tablas y gráficos.
+
+- `easystats`: es una colección de paquetes R que sirve para estadísticos y modelos en R *¡lo mejor es que dialoga con tidyverse!* [Ver más](https://easystats.github.io/easystats/)
+
+- `gt` : nos servirá para exportar los resultados en tablas 
 
 Cargaremos los paquetes con `pacman`, si aún tienes dudas sobre cómo trabajar con `pacman` puedes [revisar el práctico 2](https://learn-r-uah.netlify.app/example/02-practico/#paso-1-instalaci%C3%B3n-de-paquetes)
 
@@ -41,8 +45,13 @@ Cargaremos los paquetes con `pacman`, si aún tienes dudas sobre cómo trabajar 
 pacman::p_load(sjmisc,
                sjPlot,
                tidyverse,
-               magrittr)
+               magrittr,
+               gt,
+               remotes)
+
+remotes::install_github("easystats/parameters") # se carga así por no estar en el CRAN... aún
 ```
+
 
 # 2. Importar datos
 
@@ -90,7 +99,7 @@ Una vez conocidas las variables que incluye nuestros datos procesados, ¿cómo p
 
 Para conocer las medidas de tendencia central de las variables hay dos opciones. En la **primera** se puede pedir el estadístico manualmente, en la **segunda** se puede pedir una tabla resumen. 
 
-### Media
+### Media, media recortada y mediana
 
 Para conocer la media de una variable se utiliza la función `mean()`, su estructura es:
 
@@ -98,31 +107,19 @@ Para conocer la media de una variable se utiliza la función `mean()`, su estruc
 mean(datos$variable, na.rm=TRUE)
 ```
 
-
 El argumento `na.rm=TRUE` excluye del cálculo a los casos perdidos. Esto aplicado a nuestra variable `ingreso_percapita` se ve así:
 
 ```{r casen mean, echo=TRUE, results='markup'}
 mean(datos_proc$ingreso_percapita, na.rm=TRUE)
 ```
 
-### Media recortada
-
 Pero, ¿qué pasa si la variable `ingreso_percapita` esta influenciada por casos influyentes? Para eso puedo pedir la media recortada agregando el argumento `trim` para excluir al 5% de cada extremo
 
 ```{r casen mean trim, echo=TRUE, results='markup'}
 mean(datos_proc$ingreso_percapita, na.rm=TRUE, trim = 0.025)
 ```
-Aquí podemos ver que el valor es distinto. 
-
-Ya conocimos el promedio de la variable `ingreso_percapita` podemos informar cuanto es el promedio del ingreso en el hogar en Chile, pero antes de eso queremos saber ¿cuánto gana el 50% de los hogares? Para eso calcularemos la **mediana**
-
-### Mediana
 
 Para el cálculo de la mediana se utiliza el comando median, su estructura es similar a la `mean()`:
-
-```{r ejemplo median, eval=FALSE, include=TRUE}
-median(datos$variable, na.rm =TRUE)
-```
 
 ```{r casen median, echo=TRUE, results='markup'}
 median(datos_proc$ingreso_percapita, na.rm =TRUE)
@@ -552,19 +549,47 @@ tab_stackfrq(as.data.frame(datos_proc %>% select("o3", "o4", "o6")),
 
 # 7. Test de independencia Chi2 
 
-A la hora de graficar Chi2, debemos asegurarnos con la función `as.factor` que las variables a utilizar sean de tipo factor, luego utilizamos la función `sjp.chi2` de `sjPlot` para crear la tabla, finalmente con el argumento `axis.labels` asignamos la etiqueta de cada variable
+A la hora de graficar Chi2, debemos asegurarnos con la función `as_factor` que las variables a utilizar sean de tipo factor, luego utilizamos la función `sjp.chi2` de `sjPlot` para crear la tabla, finalmente con el argumento `axis.labels` asignamos la etiqueta de cada variable
 
 ```{r casen_x2, echo=TRUE, message=FALSE, warning=FALSE}
-data.frame(as.factor(sample(datos_proc$ocupacion, replace = TRUE)),
-                 as.factor(sample(datos_proc$o2, replace = TRUE)),
-                 as.factor(sample(datos_proc$o3, replace = TRUE)),
-                 as.factor(sample(datos_proc$o4, replace = TRUE)),
-                 as.factor(sample(datos_proc$o6, replace = TRUE))) %>% 
+data.frame(as_factor(sample(datos_proc$ocupacion, replace = TRUE)),
+                 as_factor(sample(datos_proc$o2, replace = TRUE)),
+                 as_factor(sample(datos_proc$o3, replace = TRUE)),
+                 as_factor(sample(datos_proc$o4, replace = TRUE)),
+                 as_factor(sample(datos_proc$o6, replace = TRUE))) %>% 
   sjp.chi2(., 
          title = "Gráfico de Chi2",
-         axis.labels  = c("Trabajó al menos una hora", "realizó alguna actividad", "Tenía algún empleo", "Ha trabajado alguna vez", "Busco empleo"))
+         axis.labels  = c("Trabajó al menos una hora", "realizó alguna actividad", "Tenía algún empleo", "Ha trabajado alguna vez", "Busco empleo")) 
 
 ```
+
+
+Otra forma de calcular el estadístico es con `chisq.test` del paquete `easystats`, donde entrega los estadísticos del estadístico
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(parameters)
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+chisq.test(x = table(datos_proc$ocupacion,
+                     datos_proc$sexo)) %>%  model_parameters(.) %>% parameters::print_html(., title = "tabla de chi2")
+
+```
+
+También podemos con `model_parameters` tener los resultados en una tabla, también con `print_html` podemos tener una tabla exportable. Ambas funciones son de `easystats`
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+chisq.test(x = table(datos_proc$ocupacion,
+                     datos_proc$sexo)) %>%  model_parameters(.) 
+
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+chisq.test(x = table(datos_proc$ocupacion,
+                     datos_proc$sexo)) %>%  model_parameters(.) %>% parameters::print_html(., title = "tabla de chi2")
+
+```
+
 
 # 8. Correlación
 
@@ -582,6 +607,27 @@ tab_corr(.,
          file = "output/figures/tabla4.doc")
 ```
 
+También con `cor.test` de `easystats` podemos calcular la correlación, para esto existen diversas formas, ahora veremos 2
+
+En la primera se especifican las variables de los datos que se quieren extraer 
+
+```{r casen corr-easy, echo=TRUE, results='markup'}
+cor.test(datos_proc$ingreso_percapita, datos_proc$horas_mens,  
+         method = c("pearson")) # se especifica el tipo de correlación
+
+```
+
+Mientras que en la segunda se especifica cómo formula, en ambas los resultados son los mismos, pero en esta última le diremos que queremos los parámetros en una tabla con `model_parameters` y en un formato exportable con `print_html`
+
+
+```{r casen corr-easy2, echo=TRUE, results='markup'}
+
+cor.test(formula = ~ ingreso_percapita + horas_mens,
+         data = datos_proc, method = c("pearson") ) %>% 
+  model_parameters(.) %>% # se pide que muestre los parámetros de la correlación
+  parameters::print_html(., title = "tabla de correlación") #los transforma a una tabla exportable
+
+```
 
 # 9. Anova
 
@@ -591,7 +637,26 @@ Finalmente, si queremos reportar un análisis de Anova, no podemos dejar de lado
 sjp.aov1(datos_proc$ingreso_percapita, datos_proc$sexo, title = "Anova")
 ```
 
-# 9. Resumen del práctico
+Con `easystats` podemos generar una tabla que contenga los parámetros del estadístico
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+aov(ingreso_percapita ~ sexo, data = datos_proc) %>% model_parameters(.) %>% # se pide que muestre los parámetros
+  parameters::print_html(., title = "tabla de anova") #los transforma a una tabla exportable
+```
+
+
+# 10. Pruebas T-STUDENT
+
+Para esta ocasión `easystats` tiene la función `t.test`, con la que podemos establecer los niveles de confianza con los que trabajaremos
+
+```{r}
+t.test(datos_proc$ingreso_percapita,  conf.level = 0.95) %>% model_parameters(.) %>% 
+  parameters::print_html(., title = "Prueba t-student")
+
+```
+
+
+# 11. Resumen del práctico
 
 ¡Eso es todo por este práctico! Hoy aprendimos a:
 
@@ -601,8 +666,9 @@ sjp.aov1(datos_proc$ingreso_percapita, datos_proc$sexo, title = "Anova")
 - A obtener tablas de contingencia
 - A obtener tablas de correlación y chi2
 - A obtener gráficos de Anova
+- A obtener tablas de t-student
 
-# 7. Reporte de progreso
+# 12. Reporte de progreso
 
-¡Recuerda rellenar tu [reporte de progreso](). En tu correo electrónico está disponible el código mediante al cuál debes acceder para actualizar tu estado de avance del curso.
+¡Recuerda rellenar tu [reporte de progreso](https://learn-r.formr.org). En tu correo electrónico está disponible el código mediante al cuál debes acceder para actualizar tu estado de avance del curso.
 
