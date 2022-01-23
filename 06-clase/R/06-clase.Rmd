@@ -215,7 +215,7 @@ Si quisiéramos presentar gráficos que entreguen la frecuencia de cada categor�
 ```{r casen barras simple, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
 plot_frq(datos_proc, edad_tramo,
           title = "Gráfico de frecuencias, barras",
-          type = c("bar"))
+          type = "bar")
 ```
 
 
@@ -229,7 +229,7 @@ save_plot(last_plot())  #se deja el formato del archivo (.png, .jpg, .svg o .tif
 Así guardaríamos el gráfico anterior
 
 ```{r eval=F, include=TRUE}
-save_plot("/output/img/tab.png", fig = last_plot()))
+save_plot("output/figures/tab.png", fig = last_plot()))
 ```
 
 
@@ -240,7 +240,7 @@ Si tenemos más categorías y queremos mejorar el reporte, podemos usar este có
 ```{r casen puntos simple, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
 plot_frq(datos_proc, edad_tramo,
           title = "Gráfico de frecuencias, puntos",
-          type = c("dot"))
+          type = "dot")
 ```
 
 También podemos editar un poco más este gráfico con argumentos como coord.flip, sort.frq, expand.rid, vjust, hjust 
@@ -275,7 +275,7 @@ Otra función que podemos hacer es graficar histogramas, sin embargo, como ya he
 datos_proc %>%  filter(ingreso_percapita <= 2000000) %>% 
 plot_frq(., ingreso_percapita,
           title = "Histograma",
-          type = c("histogram"))
+          type = "histogram")
 ```
 
 4. Densidad
@@ -286,7 +286,7 @@ Ahora que vemos la distribución del histograma, ¿cómo podemos ver su densidad
 datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
 plot_frq(., ingreso_percapita,
           title = "Gráfico de densidad",
-          type = c("density"))
+          type = "density")
 ```
 
 
@@ -297,7 +297,7 @@ plot_frq(., ingreso_percapita,
 ```{r casen lineas, echo=TRUE, results='markup'}
 plot_frq(datos_proc, ife,
           title = "Gráfico de líneas",
-          type = c("line"))
+          type = "line")
 
 ```
 
@@ -309,7 +309,7 @@ Para graficar los estadísticos de una variable, podemos hacerlo a través de un
 datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
 plot_frq(., ingreso_percapita,
           title = "Gráfico de caja",
-          type = c("boxplot"))
+          type = "boxplot")
 ```
 
           
@@ -321,7 +321,7 @@ Finalmente, si queremos presentar gráficos de violín, usamos este código
 datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
     plot_frq(., ingreso_percapita,
           title = "Gráfico de violín",
-          type = c("violin"))
+          type = "violin")
 ```
           
 Como pueden ver, el único argumento que se modificaba era `type = `, es decir, para hacer diversos gráficos, sólo se debe especificar el tipo de gráfico que queremos.
@@ -381,7 +381,7 @@ La primera opción que nos entrega este código son los gráficos de barra, para
 
 ```{r casen frec agrup barr, echo=TRUE, message=FALSE, warning=FALSE, results='markup'}
 plot_grpfrq(datos_proc$sexo, datos_proc$ocupacion,
-  type = c("bar"), title = "Gráfico de barras")
+  type = "bar", title = "Gráfico de barras")
 ```
 
 Podemos ver que no solo nos muestra la frecuencia absoluta, sino que también la relativa en porcentaje

@@ -96,17 +96,17 @@ sjmisc::frq(datos_proc$sexo,
 
 plot_frq(datos_proc, edad_tramo,
          title = "Gráfico de frecuencias, barras",
-         type = c("bar"))
+         type = "bar") 
 
 
-save_plot("/output/img/tab.png", fig = last_plot())
+save_plot("output/figures/tab.png", fig = last_plot())
 
 #2. Gráfico de puntos
 #Si tenemos más categorías y queremos mejorar el reporte, podemos usar este código:
   
 plot_frq(datos_proc, edad_tramo,
          title = "Gráfico de frecuencias, puntos",
-         type = c("dot"))
+         type = "dot")
 
 #También podemos cambiar el orden del eje x e y
 
@@ -118,34 +118,34 @@ plot_frq(datos_proc$edad_tramo, type = "dot", show.ci = TRUE, sort.frq = "desc",
 datos_proc %>%  filter(ingreso_percapita <= 2000000) %>% 
   plot_frq(., ingreso_percapita,
            title = "Histograma",
-           type = c("histogram"))
+           type = "histogram")
 
 # 4. Densidad
 
 datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
   plot_frq(., ingreso_percapita,
            title = "Gráfico de densidad",
-           type = c("density"))
+           type = "density")
 
 # 5. Gráfico de líneas
 
 plot_frq(datos_proc, ife,
          title = "Gráfico de líneas",
-         type = c("line"))
+         type = "line")
 
 # 6. Gráfico de cajas
 
 datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
   plot_frq(., ingreso_percapita,
            title = "Gráfico de caja",
-           type = c("boxplot"))
+           type = "boxplot")
 
 #7. Gráfico de violín
 
 datos_proc %>%  filter(ingreso_percapita <= 2000000) %>%
   plot_frq(., ingreso_percapita,
            title = "Gráfico de violín",
-           type = c("violin"))
+           type = "violin")
 
 # Como pueden ver, el único argumento que se modificaba era `type = `, es decir, para hacer diversos gráficos, sólo se debe especificar el tipo de gráfico que queremos.
 
@@ -176,7 +176,7 @@ datos_proc %>%  filter(ingreso_percapita <= 2000000 & horas_mens <= 450) %>%
 #1. Gráfico de barras
   
 plot_grpfrq(datos_proc$sexo, datos_proc$ocupacion,
-            type = c("bar"), title = "Gráfico de barras")
+            type = "bar", title = "Gráfico de barras")
 
 
 # Podemos ver que no solo nos muestra la frecuencia absoluta, sino que también la relativa en porcentaje
@@ -210,13 +210,13 @@ plot_gpt(datos_proc, ife, ocupacion, sexo,
 
 plot_grpfrq(datos_proc$sexo, datos_proc$ocupacion,
             title = "Gráfico de puntos",
-            type = c("dot"))
+            type = "dot")
 
 #3. Gráfico de líneas
 
 plot_grpfrq(datos_proc$edad_tramo, datos_proc$ife,
             title = "Gráfico de línea",
-            type = c("line"))
+            type = "line")
 
 plot_grpfrq(datos_proc$edad_tramo, datos_proc$ocupacion, 
             title = "Gráfico de línea",
@@ -226,7 +226,7 @@ plot_grpfrq(datos_proc$edad_tramo, datos_proc$ocupacion,
 
 plot_grpfrq(datos_proc$horas_mens, datos_proc$edad_tramo,
             title = "Gráfico de caja",
-            type = c("boxplot"))
+            type = "boxplot")
 
 # Además, se puede incorporar una tercera variable, en este caso lo haremos con la variable `sexo` y el argumento `intr.var`
 
@@ -238,7 +238,7 @@ plot_grpfrq(datos_proc$horas_mens, datos_proc$edad_tramo, intr.var = datos_proc$
 
 plot_grpfrq(datos_proc$horas_mens, datos_proc$edad_tramo,
             title = "Gráfico de violín",
-            type = c("violin"))
+            type = "violin")
 
 # Nuevamente, la función nos permite la creación de múltiples gráficos, sólo se debe cambiar el argumento `type =`
 
