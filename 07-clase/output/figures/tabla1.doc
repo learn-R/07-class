@@ -1,0 +1,64 @@
+<table style="border-collapse:collapse; border:none;">
+<caption style="font-weight: bold; text-align:left;">Basic descriptive statistics</caption>
+<tr>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; text-align:left;text-align:left; ">var</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; text-align:left;">type</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; text-align:left;">label</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; ">n</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; ">NA.prc</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; ">mean</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; col7">sd</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; col8">se</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; col9">md</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; 0">trimmed</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; 1">range</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; 2">iqr</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; 3">skew</th>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left;text-align:left; ">ingreso_percapita</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; text-align:left;">numeric</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; text-align:left;">Ingreso total del hogar</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; ">144418</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; ">0.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; ">355472.15</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; col7">834151.23</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; col8">2195.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; col9">229184.50</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; 0">266168.13</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; 1">225200000 (0-225200000)</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; 2">252277.57</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; 3">152.42</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left;text-align:left; background-color:#f2f2f2; ">ife</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; text-align:left;">numeric</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; text-align:left;">y26d_hog. Últimos 12 meses, ¿alguien recibió Ingreso Familiar de Emergencia?</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; ">144418</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; ">0.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; ">1.77</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; col7">1.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; col8">0.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; col9">2.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; 0">1.70</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; 1">8 (1-9)</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; 2">1.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; background-color:#f2f2f2; 3">5.41</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left;text-align:left; border-bottom: 1px solid; ">horas_mens</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; text-align:left;">numeric</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; text-align:left;">y2_hrs. Número de horas mensuales pactadas con empleador</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; ">33338</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; ">76.92</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; ">152.83</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; col7">54.69</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; col8">0.30</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; col9">180.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; 0">159.83</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; 1">719 (1-720)</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; 2">34.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:right; border-bottom: 1px solid; 3">-0.98</td>
+</tr>
+</table>
+
